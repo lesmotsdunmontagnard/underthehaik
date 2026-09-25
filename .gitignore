@@ -1,0 +1,16 @@
+node_modules/
+dist/
+.astro/
+.env
+.env.*
+!.env.example
+work/
+.pnpm-store/
+
+outputs/
+
+*.log
+
+.DS_Store
+
+Thumbs.db

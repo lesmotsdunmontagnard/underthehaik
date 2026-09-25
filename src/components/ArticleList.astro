@@ -1,0 +1,10 @@
+---
+import SeriesLabel from "./SeriesLabel.astro";
+import EditorialImage from "./EditorialImage.astro";
+import { articleUrl,date,readingTime,type Article } from '../lib/content';
+import {categoryFr,frUrl} from '../lib/i18n';
+interface Props {articles:Article[]; french?:boolean;}
+const {articles,french=false}=Astro.props;
+---
+<div class="article-list">{articles.map(a=><article class:list={["article-row", {"has-cover":!!a.data.cover}]}><div class="meta card-meta"><span>{french?categoryFr[a.data.category]:a.data.category}</span><time datetime={a.data.pubDate.toISOString()}>{date(a.data.pubDate,french?'fr':'en')}</time></div><div class="card-copy"><SeriesLabel series={a.data.series} {french}/><h2 lang={a.data.language}><a href={french?frUrl(`essays/${a.id}/`):articleUrl(a)}>{a.data.title}</a></h2><p lang={a.data.language}>{a.data.description}</p><div class="meta reading-meta">{readingTime(a)} {french?'min de lecture':'min read'} · {a.data.language==='fr'?'Français':french?'Anglais':'English'}{a.data.placeholder && (french?' · Texte provisoire':' · Sample essay')}</div></div>{a.data.cover&&<a class="card-cover" href={french?frUrl(`essays/${a.id}/`):articleUrl(a)}><EditorialImage {...a.data.cover} position="center" caption={undefined} credit={undefined} creditUrl={undefined} preview/></a>}</article>)}</div>
+{articles.length===0 && <p class="empty">{french?'Les prochains textes sur ce sujet paraîtront ici.':'New writing in this subject will appear here.'}</p>}

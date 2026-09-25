@@ -1,0 +1,7 @@
+---
+import EditorialImage from './EditorialImage.astro';
+import type {EditorialImageData} from '../lib/editorial-images';
+interface Props {left:EditorialImageData;right:EditorialImageData;label?:string;}
+const {left,right,label='Image comparison'}=Astro.props;
+---
+<div class="image-comparison image-wide" role="group" aria-label={label}><EditorialImage {...left}/><EditorialImage {...right}/></div>

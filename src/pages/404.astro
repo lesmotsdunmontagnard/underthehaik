@@ -1,0 +1,5 @@
+---
+import Base from '../layouts/Base.astro';
+import {url} from '../lib/content';
+---
+<Base title="Page not found"><article class="prose"><div class="meta">404</div><h1>This page isn’t here.</h1><p>The address may have changed, or the essay may not yet be published.</p><a class="text-link" href={url('essays/')}>Browse the essays →</a></article></Base>

@@ -1,0 +1,12 @@
+---
+import {Image} from 'astro:assets';
+import {resolveEditorialImage,validateCredit,type EditorialImageData} from '../lib/editorial-images';
+interface Props extends EditorialImageData {display?:'normal'|'wide'|'full'|'portrait';loading?:'lazy'|'eager';preview?:boolean;}
+const {src,alt,caption,credit,creditUrl,position='center',display='normal',loading='lazy',preview=false}=Astro.props;
+const image=resolveEditorialImage(src,alt);validateCredit(credit,creditUrl);
+const widths=[320,640,960,1440,1920].filter(w=>w<image.width);widths.push(Math.min(image.width,1920));
+---
+<figure class:list={['editorial-image',`image-${display}`,{'image-preview':preview}]}>
+<Image src={image} alt={alt} widths={[...new Set(widths)]} sizes={preview?'(max-width:600px) 90vw, 400px':display==='portrait'?'(max-width:600px) 85vw, 420px':'(max-width:600px) 90vw, (max-width:1060px) 85vw, 932px'} format="webp" quality={82} loading={loading} decoding="async" style={`object-position:${position}`} />
+{(caption||credit)&&<figcaption>{caption&&<span>{caption}</span>}{credit&&<span class="image-credit">{creditUrl?<a href={creditUrl} rel="noopener noreferrer">{credit}</a>:credit}</span>}</figcaption>}
+</figure>

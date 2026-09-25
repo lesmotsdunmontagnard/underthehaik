@@ -1,0 +1,10 @@
+---
+import EditorialImage from './EditorialImage.astro';
+import type {EditorialImageData} from '../lib/editorial-images';
+interface Props {cover:EditorialImageData;language:string;}
+const {cover,language}=Astro.props;
+---
+<div class="scrolling-article" lang={language} dir="auto">
+  <div class="scrolling-cover"><EditorialImage {...cover} loading="eager" display="wide"/></div>
+  <div class="scrolling-text"><slot/></div>
+</div>

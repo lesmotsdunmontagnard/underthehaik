@@ -1,0 +1,6 @@
+---
+import {slug,url} from '../lib/content';
+interface Props {series?:{name:string;part:number}; french?:boolean;}
+const {series,french=false}=Astro.props;
+---
+{series&&<div class="meta series-label"><a href={url(`${french?'fr/':''}tags/${slug(series.name)}/`)}>{series.name}</a> · {(french?'Partie ':'Part ')+series.part}</div>}

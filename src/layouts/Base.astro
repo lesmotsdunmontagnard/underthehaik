@@ -1,0 +1,36 @@
+---
+import '../styles/global.css';
+import '../styles/editorial.css';
+import { url } from '../lib/content';
+import {routeContext,frUrl} from '../lib/i18n';
+interface Props {title?:string; description?:string; language?:string; article?:boolean; pubDate?:Date; updatedDate?:Date;}
+const {title,description='Essays on faith, heritage and the changing world, through an Algerian Muslim woman’s lens.',language='en',article=false,pubDate,updatedDate}=Astro.props;
+const pageTitle=title?`${title} — Under the Haik`:'Under the Haik — Rooted in faith, shaped by heritage';
+const canonical=new URL(Astro.url.pathname,Astro.site);
+const ctx=routeContext(Astro.url.pathname);const fr=ctx.french;const link=fr?frUrl:url;
+const nav=[[fr?'Accueil':'Home',''],[fr?'Essais':'Essays','essays/'],[fr?'Catégories':'Categories','categories/'],[fr?'À propos':'About','about/']];
+---
+<!doctype html>
+<html lang={fr?'fr':language} dir="ltr">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/>
+<meta name="author" content="Safaa wa Noor"/>
+<title>{pageTitle}</title><meta name="description" content={description}/><link rel="canonical" href={canonical}/>
+{!article&&<><link rel="alternate" hreflang="en" href={new URL(ctx.english,Astro.site)}/><link rel="alternate" hreflang="fr" href={new URL(ctx.fr,Astro.site)}/><link rel="alternate" hreflang="x-default" href={new URL(ctx.english,Astro.site)}/></>}
+<meta property="og:title" content={pageTitle}/><meta property="og:description" content={description}/><meta property="og:url" content={canonical}/><meta property="og:type" content={article?'article':'website'}/><meta property="og:site_name" content="Under the Haik"/>
+{pubDate && <meta property="article:published_time" content={pubDate.toISOString()}/>}{updatedDate && <meta property="article:modified_time" content={updatedDate.toISOString()}/>}
+<meta name="twitter:card" content="summary"/><link rel="icon" href={url('favicon-32.png')} type="image/png" sizes="32x32"/><link rel="icon" href={url('favicon-192.png')} type="image/png" sizes="192x192"/><link rel="alternate" type="application/rss+xml" title="Under the Haik" href={url('rss.xml')}/>
+<script is:inline>try{if(sessionStorage.getItem('uth-theme')==='dark')document.documentElement.dataset.theme='dark';}catch{}</script>
+</head>
+<body><a class="skip-link" href="#main">{fr?'Aller au contenu':'Skip to content'}</a><div class="shell">
+<div class="topline"><span>{fr?'Une revue indépendante':'An independent journal'}</span><div class="site-controls"><nav class="language-switch" aria-label={fr?'Langue du site':'Site language'}><a href={ctx.english} lang="en" aria-current={!fr?'true':undefined}>EN</a><span aria-hidden="true">/</span><a href={ctx.fr} lang="fr" aria-current={fr?'true':undefined}>FR</a></nav><button class="theme-toggle" type="button" aria-pressed="false" data-light={fr?'Mode clair':'Light mode'} data-dark={fr?'Mode sombre':'Dark mode'} hidden>{fr?'Mode sombre':'Dark mode'}</button></div></div>
+<header class="masthead"><a class="wordmark" href={link()}><img class="brand-logo" src={url('images/brand/logo.png')} alt="" width="320" height="320" loading="eager"/>Under the Haik</a><p>{fr?'Ancrée dans la foi, façonnée par l’héritage':'Rooted in faith, shaped by heritage'}</p></header>
+<nav class="main-nav" aria-label={fr?'Navigation principale':'Main navigation'}>{nav.map(([label,path])=><a href={link(path)} aria-current={Astro.url.pathname===link(path)?'page':undefined}>{label}</a>)}</nav>
+<main id="main"><slot/></main>
+<footer><span>© {new Date().getFullYear()} Under the Haik</span><div class="footer-right"><nav class="social-links" aria-label={fr?'Réseaux sociaux':'Social media'}><a href="https://www.instagram.com/safaawanour/" aria-label="Instagram" rel="me noopener noreferrer"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" class="social-dot"/></svg></a><a href="https://www.tiktok.com/@safaawanour" aria-label="TikTok" rel="me noopener noreferrer"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4v10.2a4.2 4.2 0 1 1-3.4-4.1v3a1.4 1.4 0 1 0 1.4 1.4V4h2.1c.3 1.6 1.3 2.7 2.9 3.1v2.2A6.3 6.3 0 0 1 14 8V4Z"/></svg></a><a href="https://www.facebook.com/underthehaik/" aria-label="Facebook" rel="me noopener noreferrer"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 21v-8h2.7l.4-3H14V8.1c0-.9.3-1.5 1.6-1.5h1.7V4a20 20 0 0 0-2.5-.2c-2.5 0-4.2 1.5-4.2 4.2V10H8v3h2.6v8H14Z"/></svg></a></nav><nav aria-label={fr?'Pied de page':'Footer'}><a href={link('contact/')}>Contact</a><a href={link('privacy/')}>{fr?'Confidentialité':'Privacy'}</a><a href={url('rss.xml')}>RSS</a></nav></div></footer>
+</div>
+<script>
+const button=document.querySelector<HTMLButtonElement>('.theme-toggle');
+if(button){button.hidden=false;const sync=()=>{const dark=document.documentElement.dataset.theme==='dark';button.textContent=(dark?button.dataset.light:button.dataset.dark)||'';button.setAttribute('aria-pressed',String(dark));};sync();button.addEventListener('click',()=>{const dark=document.documentElement.dataset.theme!=='dark';document.documentElement.dataset.theme=dark?'dark':'light';try{sessionStorage.setItem('uth-theme',dark?'dark':'light');}catch{}sync();});}
+</script>
+</body></html>

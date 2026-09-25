@@ -1,0 +1,8 @@
+---
+import Base from '../../layouts/Base.astro';
+import ArticleList from '../../components/ArticleList.astro';
+import {categories,published,slug} from '../../lib/content';
+export async function getStaticPaths(){const articles=await published();return categories.map(category=>({params:{category:slug(category)},props:{category,articles:articles.filter(a=>a.data.category===category)}}));}
+const {category,articles}=Astro.props;
+---
+<Base title={category}><header class="page-header"><h1>{category}</h1></header><ArticleList articles={articles}/></Base>

@@ -1,0 +1,7 @@
+---
+import EditorialImage from './EditorialImage.astro';
+import type {EditorialImageData} from '../lib/editorial-images';
+interface Props {images:EditorialImageData[];label?:string;}
+const {images,label='Image gallery'}=Astro.props;
+---
+<div class="image-gallery image-full" role="group" aria-label={label}>{images.map(image=><EditorialImage {...image}/>)}</div>

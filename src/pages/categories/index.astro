@@ -1,0 +1,6 @@
+---
+import Base from '../../layouts/Base.astro';
+import {categories,published,url,slug} from '../../lib/content';
+const articles=await published();
+---
+<Base title="Categories"><header class="page-header"><h1>Explore by subject</h1><p>Different threads, a shared curiosity.</p></header>{categories.map(c=><section class="article-row"><div class="meta">{articles.filter(a=>a.data.category===c).length} essays</div><h2><a href={url(`categories/${slug(c)}/`)}>{c}</a></h2></section>)}</Base>

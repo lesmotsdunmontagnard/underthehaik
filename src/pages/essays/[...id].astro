@@ -1,0 +1,26 @@
+---
+import ScrollingArticle from "../../components/ScrollingArticle.astro";
+import SeriesLabel from "../../components/SeriesLabel.astro";
+import EditorialImage from "../../components/EditorialImage.astro";
+import { render } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import ArticleList from '../../components/ArticleList.astro';
+import {published,url,slug,date,readingTime,articleUrl} from '../../lib/content';
+export async function getStaticPaths(){const articles=await published();return articles.map((article,index)=>({params:{id:article.id},props:{article,previous:articles[index+1],next:articles[index-1],related:articles.filter(a=>a.id!==article.id&&(a.data.category===article.data.category||a.data.tags.some(t=>article.data.tags.includes(t)))).slice(0,3)}}));}
+const {article,previous,next,related}=Astro.props;const {Content}=await render(article);
+---
+<Base title={article.data.title} description={article.data.description} language={article.data.language} article pubDate={article.data.pubDate} updatedDate={article.data.updatedDate}>
+<article class="prose editorial-prose" lang={article.data.language} dir="auto"><a class="text-link" href={url('essays/')}>← All essays</a><p class="meta"><a href={url(`categories/${slug(article.data.category)}/`)}>{article.data.category}</a> / {article.data.language==='fr'?'Français':'English'}</p><SeriesLabel series={article.data.series}/><h1>{article.data.title}</h1><div class="meta"><time datetime={article.data.pubDate.toISOString()}>{date(article.data.pubDate,article.data.language)}</time> · {readingTime(article)} min read{article.data.updatedDate&&<> · Updated {date(article.data.updatedDate,article.data.language)}</>}</div>
+{article.data.placeholder&&<aside class="notice">Sample essay — temporary text to replace before publication.</aside>}
+{article.data.coverLayout==='side'&&article.data.cover?<div class="article-body-side"><EditorialImage {...article.data.cover} loading="eager" display="portrait"/><Content/></div>:article.data.cover?<ScrollingArticle cover={article.data.cover} language={article.data.language}><Content/></ScrollingArticle>:<>{article.data.coverImage&&<img src={url(article.data.coverImage)} alt={article.data.coverAlt} loading="eager"/>}<Content/></>}
+{article.data.category==='Faith'&&<aside class="notice">Personal reflection and research, not a fatwa or a substitute for guidance from qualified scholars.</aside>}
+<div class="article-tags">{article.data.tags.map(tag=><a href={url(`tags/${slug(tag)}/`)}>#{tag}</a>)}</div>
+<button class="share" type="button" hidden>Copy article link</button><span class="status" role="status"></span>
+{(previous||next)&&<nav class="article-navigation" aria-label="Previous and next essays">{previous&&<a href={articleUrl(previous)}><span class="meta">← Previous essay</span>{previous.data.title}</a>}{next&&<a href={articleUrl(next)}><span class="meta">Next essay →</span>{next.data.title}</a>}</nav>}
+</article>
+{related.length>0&&<section><h2>Related writing</h2><ArticleList articles={related}/></section>}
+</Base>
+<script>
+const share=document.querySelector<HTMLButtonElement>('.share');const status=document.querySelector<HTMLElement>('.status');
+if(share&&status){share.hidden=false;share.addEventListener('click',async()=>{try{await navigator.clipboard.writeText(document.querySelector<HTMLLinkElement>('link[rel="canonical"]')?.href||location.href);status.textContent='Link copied.';}catch{status.textContent='Copy the address from your browser’s address bar.';}});}
+</script>

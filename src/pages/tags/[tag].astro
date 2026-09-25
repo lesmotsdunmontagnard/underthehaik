@@ -1,0 +1,10 @@
+---
+import Base from '../../layouts/Base.astro';
+import ArticleList from '../../components/ArticleList.astro';
+import {published,slug} from '../../lib/content';
+export async function getStaticPaths(){const articles=await published();const tags=[...new Map(articles.flatMap(a=>a.data.tags).map(t=>[slug(t),t])).values()];return tags.map(tag=>({params:{tag:slug(tag)},props:{tag,articles:articles.filter(a=>a.data.tags.some(t=>slug(t)===slug(tag)))}}));}
+const {tag,articles}=Astro.props;
+const series=articles.some(a=>a.data.series?.name===tag);
+if(series) articles.sort((a,b)=>(a.data.series?.part??0)-(b.data.series?.part??0));
+---
+<Base title={series?tag:`Tagged: ${tag}`}><header class="page-header">{series&&<p class="meta">Technology / Series</p>}<h1>{series?tag:`#${tag}`}</h1></header><ArticleList articles={articles}/></Base>
