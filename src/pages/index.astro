@@ -3,11 +3,11 @@ import SeriesLabel from "../components/SeriesLabel.astro";
 import EditorialImage from "../components/EditorialImage.astro";
 import Base from '../layouts/Base.astro';
 import ArticleList from '../components/ArticleList.astro';
-import {published,categories,url,slug,articleUrl,readingTime,date} from '../lib/content';
-const articles=await published();const featured=articles[0];
+import {published,latestByCategory,categories,url,slug,articleUrl,readingTime,date} from '../lib/content';
+const articles=await published();const featured=articles[0];const latest=latestByCategory(articles);
 ---
 <Base><p class="intro">Essays on faith, heritage and the changing world, through an Algerian Muslim woman’s lens.</p>
 {featured && <article class:list={["feature",{"feature-with-cover":!!featured.data.cover}]} lang={featured.data.language}>{featured.data.cover&&<EditorialImage {...featured.data.cover} caption={undefined} credit={undefined} creditUrl={undefined} preview loading="eager"/>}<div class="meta">Featured essay / {featured.data.category}</div><SeriesLabel series={featured.data.series}/><h1><a href={articleUrl(featured)}>{featured.data.title}</a></h1><p>{featured.data.description}</p><div class="meta">{date(featured.data.pubDate)} · {readingTime(featured)} min read · {featured.data.language==='fr'?'Français':'English'}{featured.data.placeholder && ' · Sample essay'}</div><a class="text-link" href={articleUrl(featured)}>Read the essay <span aria-hidden="true">↗</span></a></article>}
-{articles.length>1&&<><div class="section-heading"><h2>Latest writings</h2><a href={url('essays/')}>All essays <span aria-hidden="true">↗</span></a></div><ArticleList articles={articles.slice(1,6)}/></>}
+{latest.length>0&&<><div class="section-heading"><h2>Latest writings</h2><a href={url('essays/')}>All essays <span aria-hidden="true">↗</span></a></div><ArticleList articles={latest}/></>}
 <section class="subjects"><h2 class="meta">Explore by subject</h2><div class="subject-links">{categories.map(c=><a href={url(`categories/${slug(c)}/`)}>{c}</a>)}</div></section>
 <section class="author"><h2>A voice beneath the folds.</h2><p class="meta">By Safaa wa Noor</p><p>An Algerian Muslim woman writing at the intersection of faith, heritage, technology, and modern life. A place for careful questions and personal reflections.</p><a class="text-link" href={url('about/')}>More about the journal <span aria-hidden="true">↗</span></a></section></Base>
